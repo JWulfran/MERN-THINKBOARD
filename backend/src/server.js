@@ -2,6 +2,7 @@ import express from "express";
 import NotesRoutes from "./routes/NotesRoutes.js";
 import {connectDB} from "./config/db.js";
 import dotenv from "dotenv";
+import rateLimiter from "./middleware/rateLimiter.js";
 
 dotenv.config();
 
@@ -10,11 +11,13 @@ const PORT = process.env.PORT || 5001;
 
 // Middleware
 app.use(express.json())
+app.use(rateLimiter)
 
-connectDB();
 
 app.use("/api/notes", NotesRoutes);
 
-app.listen(PORT, () => {
-    console.log("Server is On.. Port : ", PORT);
+connectDB().then(() => {
+    app.listen(PORT, () => {
+        console.log("Server is On.. Port : ", PORT);
+    });
 });
